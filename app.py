@@ -5,7 +5,8 @@ import numpy as np
 from PIL import Image
 
 # Load the trained model
-model = load_model("src/defect_model.keras")
+model = load_model("defect_model.keras")
+
 
 st.title("🧬 Defect Detection in Manufacturing Lines")
 st.write("Upload an image to check if it’s **Defective** or **Normal**.")
