@@ -1,27 +1,30 @@
 import streamlit as st
 from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
+import cv2
 
-# Load the trained model
+st.set_page_config(page_title="Defect Detection", layout="centered")
+
+st.title("🧠 Defect Detection in Manufacturing Lines")
+st.write("Upload an image to check if it’s **Defective** or **Normal.**")
+
+# Load model
 model = load_model("defect_model.keras")
 
-
-st.title("🧬 Defect Detection in Manufacturing Lines")
-st.write("Upload an image to check if it’s **Defective** or **Normal**.")
-
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# File uploader
+uploaded_file = st.file_uploader("Upload an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    img = Image.open(uploaded_file).resize((150, 150))
-    st.image(img, caption="Uploaded Image", use_column_width=True)
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array = img_array / 255.0
+    # Convert image to array and preprocess
+    img = np.array(image.resize((224, 224))) / 255.0
+    img = np.expand_dims(img, axis=0)
 
-    prediction = model.predict(img_array)
-    result = "🧫 Defective Sample" if prediction[0][0] < 0.5 else "✅ Normal Sample"
+    # Prediction
+    prediction = model.predict(img)
+    result = "Defective" if prediction[0][0] > 0.5 else "Normal"
 
-    st.subheader(result)
+    st.subheader(f"✅ Prediction: {result}")
